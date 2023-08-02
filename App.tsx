@@ -6,6 +6,9 @@
  */
 
 import React, {useState, useEffect} from 'react';
+import MainScreen from './MainScreen';
+import FormScreen from './FormScreen';
+import ListScreen from './ListScreen';
 import {APP_USERNAME, APP_PASSWORD} from '@env';
 import axios from 'axios';
 import base64 from 'react-native-base64';
@@ -156,8 +159,11 @@ function App(): JSX.Element {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Home" component={Repositories} />
-        <Stack.Screen name="Details" component={Tags} />
+        <Stack.Screen name="Main" component={MainScreen} />
+        <Stack.Screen name="Form" component={FormScreen} />
+        <Stack.Screen name="List" component={ListScreen} />
+        {/*         <Stack.Screen name="Home" component={Repositories} />
+        <Stack.Screen name="Details" component={Tags} /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );
