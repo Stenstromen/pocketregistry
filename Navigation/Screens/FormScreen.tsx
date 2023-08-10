@@ -5,18 +5,13 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  Alert,
 } from 'react-native';
+import CheckBox from '@react-native-community/checkbox';
 import * as Keychain from 'react-native-keychain';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {RootStackParamList} from '../../Types';
 
-type RootStackParamList = {
-  PocketRegistry: undefined;
-  Form: undefined;
-  List: undefined;
-};
-
-type FormScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Form'>;
+type FormScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 
 interface Props {
   navigation: FormScreenNavigationProp;
@@ -26,10 +21,15 @@ const FormScreen: React.FC<Props> = ({navigation}) => {
   const [hostname, setHostname] = useState<string>('');
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [secure, setSecure] = useState<boolean>(true);
 
   const handleSave = async () => {
-    await Keychain.setGenericPassword(username, password, {service: hostname});
-    Alert.alert('Credentials saved!');
+    const protocol = secure ? 'https://' : 'http://';
+    const fullHostname = `${protocol}${hostname}`;
+
+    await Keychain.setGenericPassword(username, password, {
+      service: fullHostname,
+    });
     navigation.navigate('PocketRegistry');
   };
 
@@ -64,6 +64,14 @@ const FormScreen: React.FC<Props> = ({navigation}) => {
         autoComplete="off"
         style={styles.text}
       />
+      <View style={styles.checkboxContainer}>
+        <CheckBox
+          value={secure}
+          onValueChange={setSecure}
+          style={styles.checkbox}
+        />
+        <Text style={styles.label}>Secure (https)</Text>
+      </View>
       <TouchableOpacity style={styles.button} onPress={handleSave}>
         <Text style={styles.buttonText}>Save</Text>
       </TouchableOpacity>
@@ -86,6 +94,19 @@ const styles = StyleSheet.create({
   text: {
     padding: 20,
     fontSize: 25,
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  checkbox: {
+    marginTop: 3,
+    marginLeft: 15,
+  },
+  label: {
+    fontSize: 18,
+    marginLeft: 10,
   },
 });
 

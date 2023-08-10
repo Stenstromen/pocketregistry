@@ -1,7 +1,21 @@
 import React, {useEffect} from 'react';
 import {View, Text, FlatList, StyleSheet} from 'react-native';
+import {RouteProp} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {RootStackParamList} from '../../Types';
 
-const TagScreen: React.FC<any> = ({route, navigation}) => {
+type TagScreenRouteProp = RouteProp<RootStackParamList, 'TagScreen'>;
+type TagScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  'TagScreen'
+>;
+
+type TagScreenProps = {
+  route: TagScreenRouteProp;
+  navigation: TagScreenNavigationProp;
+};
+
+const TagScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
   const {tags} = route.params;
 
   useEffect(() => {

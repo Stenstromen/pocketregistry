@@ -1,27 +1,13 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 import React, {useEffect, useState} from 'react';
-import {
-  /* FlatList */
-  Text,
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-} from 'react-native';
+import {Text, View, TouchableOpacity, StyleSheet, Alert} from 'react-native';
 import {SwipeListView} from 'react-native-swipe-list-view';
 import * as Keychain from 'react-native-keychain';
-import axios from 'axios';
 import base64 from 'react-native-base64';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {RootStackParamList} from '../../Types';
 
-type RootStackParamList = {
-  Main: undefined;
-  Form: undefined;
-  List: undefined;
-  RepositoryScreen: {serviceName: string; data: string[]};
-};
-
-type FormScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Form'>;
+type FormScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 
 interface Props {
   navigation: FormScreenNavigationProp;
@@ -34,24 +20,27 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
     const loadCredentials = async () => {
       const availableCredentials =
         await Keychain.getAllGenericPasswordServices();
+      // Update the credentials state.
       setCredentials(availableCredentials.map(service => ({service})));
+      // If the credentials list is empty, navigate to 'PocketRegistry'.
+      if (availableCredentials.length === 0) {
+        navigation.navigate('PocketRegistry');
+      }
     };
 
     loadCredentials();
-  }, []);
+  }, [navigation, credentials]);
 
   const handleDelete = async (service: string) => {
     try {
       const result = await Keychain.resetGenericPassword({service});
       if (result) {
-        Alert.alert('Credentials deleted successfully!');
         const availableCredentials =
           await Keychain.getAllGenericPasswordServices();
         setCredentials(availableCredentials.map(service => ({service})));
       }
     } catch (error) {
-      Alert.alert('Error deleting credentials');
-      console.error(error);
+      Alert.alert('Error deleting ' + service);
     }
   };
   const handleCredentialPress = async (service: string) => {
@@ -82,13 +71,20 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
     registryPass: string,
   ) => {
     try {
-      const response = await axios.get(`https://${hostname}/v2/_catalog`, {
+      const auth = 'Basic ' + base64.encode(registryUser + ':' + registryPass);
+      const response = await fetch(`${hostname}/v2/_catalog`, {
+        method: 'GET',
         headers: {
-          Authorization:
-            'Basic ' + base64.encode(registryUser + ':' + registryPass),
+          Authorization: auth,
         },
       });
-      return response.data.repositories;
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok.');
+      }
+
+      const responseData = await response.json();
+      return responseData.repositories;
     } catch (error) {
       console.error('Error fetching repositories:', error);
       return [];
@@ -103,7 +99,9 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
         renderItem={({item}) => (
           <TouchableOpacity onPress={() => handleCredentialPress(item.service)}>
             <View style={styles.rowFront}>
-              <Text style={styles.text}>{item.service}</Text>
+              <Text style={styles.text}>
+                {item.service.replace(/^https?:\/\//, '')}
+              </Text>
             </View>
           </TouchableOpacity>
         )}

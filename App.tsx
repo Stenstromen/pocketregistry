@@ -1,32 +1,12 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React from 'react';
-import MainScreen from './MainScreen';
-import FormScreen from './FormScreen';
-import ListScreen from './ListScreen';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import RepositoryScreen from './RepositoryScreen';
-import TagScreen from './TagScreen';
-
-type RootStackParamList = {
-  PocketRegistry: undefined;
-  Form: undefined;
-  List: undefined;
-  RepositoryScreen: {
-    data: string[];
-    serviceName: string;
-  };
-  TagScreen: {
-    tags: string[];
-    repo: string;
-  };
-};
+import {RootStackParamList} from './Types';
+import MainScreen from './Navigation/MainScreen';
+import FormScreen from './Navigation/Screens/FormScreen';
+import ListScreen from './Navigation/Screens/ListScreen';
+import RepositoryScreen from './Navigation/Screens/RepositoryScreen';
+import TagScreen from './Navigation/Screens/TagScreen';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -35,7 +15,7 @@ function App(): JSX.Element {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="PocketRegistry" component={MainScreen} />
-        <Stack.Screen name="Form" component={FormScreen} />
+        <Stack.Screen name="Add" component={FormScreen} />
         <Stack.Screen name="List" component={ListScreen} />
         <Stack.Screen
           name="RepositoryScreen"
