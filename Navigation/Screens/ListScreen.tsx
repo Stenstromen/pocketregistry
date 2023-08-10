@@ -5,6 +5,7 @@ import {SwipeListView} from 'react-native-swipe-list-view';
 import * as Keychain from 'react-native-keychain';
 import base64 from 'react-native-base64';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {useDarkMode} from '../../DarkModeContext';
 import {RootStackParamList} from '../../Types';
 
 type FormScreenNavigationProp = StackNavigationProp<RootStackParamList>;
@@ -13,7 +14,35 @@ interface Props {
   navigation: FormScreenNavigationProp;
 }
 
+const getDynamicStyles = (isDark: boolean) => {
+  return StyleSheet.create({
+    text: {
+      padding: 20,
+      fontSize: 25,
+      color: isDark ? '#ccc' : '#333',
+    },
+    rowFront: {
+      alignItems: 'center',
+      backgroundColor: isDark ? '#333' : '#fff',
+      borderBottomColor: isDark ? '#666' : '#ccc',
+      borderBottomWidth: 1,
+      justifyContent: 'center',
+      height: 60,
+    },
+    rowBack: {
+      alignItems: 'center',
+      backgroundColor: isDark ? '#333' : '#fff',
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingLeft: 15,
+    },
+  });
+};
+
 const ListScreen: React.FC<Props> = ({navigation}) => {
+  const {isDarkMode} = useDarkMode();
+  const dynamicStyles = getDynamicStyles(isDarkMode);
   const [credentials, setCredentials] = useState<Array<{service: string}>>([]);
 
   useEffect(() => {
@@ -98,15 +127,15 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
         keyExtractor={item => item.service}
         renderItem={({item}) => (
           <TouchableOpacity onPress={() => handleCredentialPress(item.service)}>
-            <View style={styles.rowFront}>
-              <Text style={styles.text}>
+            <View style={dynamicStyles.rowFront}>
+              <Text style={dynamicStyles.text}>
                 {item.service.replace(/^https?:\/\//, '')}
               </Text>
             </View>
           </TouchableOpacity>
         )}
         renderHiddenItem={({item}) => (
-          <View style={styles.rowBack}>
+          <View style={dynamicStyles.rowBack}>
             <TouchableOpacity
               style={[styles.backRightBtn, styles.backRightBtnRight]}
               onPress={() => {
@@ -131,7 +160,7 @@ const styles = StyleSheet.create({
     padding: 20,
     fontSize: 25,
   },
-  rowFront: {
+  /*   rowFront: {
     alignItems: 'center',
     backgroundColor: '#FFF',
     borderBottomColor: 'black',
@@ -144,9 +173,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#DDD',
     flex: 1,
     flexDirection: 'row',
-    //justifyContent: 'space-between',
     paddingLeft: 15,
-  },
+  }, */
   backRightBtn: {
     alignItems: 'center',
     bottom: 0,

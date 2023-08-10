@@ -11,6 +11,7 @@ import base64 from 'react-native-base64';
 import * as Keychain from 'react-native-keychain';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {useDarkMode} from '../../DarkModeContext';
 import {RootStackParamList} from '../../Types';
 
 type RepositoryScreenRouteProp = RouteProp<
@@ -27,7 +28,23 @@ type TagScreenProps = {
   navigation: RepositoryScreenNavigationProp;
 };
 
+const getDynamicStyles = (isDark: boolean) => {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: isDark ? '#333' : '#f0f0f0',
+    },
+    text: {
+      padding: 20,
+      fontSize: 25,
+      color: isDark ? '#ccc' : '#333',
+    },
+  });
+};
+
 const RepositoryScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
+  const {isDarkMode} = useDarkMode();
+  const dynamicStyles = getDynamicStyles(isDarkMode);
   const {data} = route.params;
   const [credentials, setCredentials] = useState<{
     username: string;
@@ -96,14 +113,14 @@ const RepositoryScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={dynamicStyles.container}>
       <FlatList
         data={data}
         keyExtractor={item => item}
         renderItem={({item}) => (
           <TouchableOpacity onPress={() => handlePress(item)}>
             <View>
-              <Text style={styles.text}>{item}</Text>
+              <Text style={dynamicStyles.text}>{item}</Text>
             </View>
           </TouchableOpacity>
         )}
@@ -111,16 +128,5 @@ const RepositoryScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f0f0f0',
-  },
-  text: {
-    padding: 20,
-    fontSize: 25,
-  },
-});
 
 export default RepositoryScreen;

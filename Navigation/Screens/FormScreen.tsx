@@ -9,6 +9,7 @@ import {
 import CheckBox from '@react-native-community/checkbox';
 import * as Keychain from 'react-native-keychain';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {useDarkMode} from '../../DarkModeContext';
 import {RootStackParamList} from '../../Types';
 
 type FormScreenNavigationProp = StackNavigationProp<RootStackParamList>;
@@ -17,11 +18,29 @@ interface Props {
   navigation: FormScreenNavigationProp;
 }
 
+const getDynamicStyles = (isDark: boolean) => {
+  return StyleSheet.create({
+    text: {
+      padding: 20,
+      fontSize: 25,
+      color: isDark ? '#ccc' : '#333',
+    },
+    label: {
+      color: isDark ? '#ccc' : '#333',
+      fontSize: 18,
+      marginLeft: 10,
+    },
+  });
+};
+
 const FormScreen: React.FC<Props> = ({navigation}) => {
   const [hostname, setHostname] = useState<string>('');
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [secure, setSecure] = useState<boolean>(true);
+
+  const {isDarkMode} = useDarkMode();
+  const dynamicStyles = getDynamicStyles(isDarkMode);
 
   const handleSave = async () => {
     const protocol = secure ? 'https://' : 'http://';
@@ -43,7 +62,7 @@ const FormScreen: React.FC<Props> = ({navigation}) => {
         autoCapitalize="none"
         autoCorrect={false}
         autoComplete="off"
-        style={styles.text}
+        style={dynamicStyles.text}
       />
       <TextInput
         placeholder="Username"
@@ -52,7 +71,7 @@ const FormScreen: React.FC<Props> = ({navigation}) => {
         autoCapitalize="none"
         autoCorrect={false}
         autoComplete="off"
-        style={styles.text}
+        style={dynamicStyles.text}
       />
       <TextInput
         placeholder="Password"
@@ -62,7 +81,7 @@ const FormScreen: React.FC<Props> = ({navigation}) => {
         autoCapitalize="none"
         autoCorrect={false}
         autoComplete="off"
-        style={styles.text}
+        style={dynamicStyles.text}
       />
       <View style={styles.checkboxContainer}>
         <CheckBox
@@ -70,7 +89,7 @@ const FormScreen: React.FC<Props> = ({navigation}) => {
           onValueChange={setSecure}
           style={styles.checkbox}
         />
-        <Text style={styles.label}>Secure (https)</Text>
+        <Text style={dynamicStyles.label}>Secure (https)</Text>
       </View>
       <TouchableOpacity style={styles.button} onPress={handleSave}>
         <Text style={styles.buttonText}>Save</Text>
@@ -91,10 +110,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
   },
-  text: {
-    padding: 20,
-    fontSize: 25,
-  },
   checkboxContainer: {
     flexDirection: 'row',
     marginBottom: 20,
@@ -103,10 +118,6 @@ const styles = StyleSheet.create({
   checkbox: {
     marginTop: 3,
     marginLeft: 15,
-  },
-  label: {
-    fontSize: 18,
-    marginLeft: 10,
   },
 });
 
