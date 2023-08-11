@@ -100,6 +100,7 @@ const RepositoryScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
       navigation.navigate('TagScreen', {
         repo: tag,
         tags: responseData.tags,
+        url: route.params.serviceName,
       });
     } catch (error) {
       if (error instanceof Error) {

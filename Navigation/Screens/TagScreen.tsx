@@ -1,9 +1,18 @@
-import React, {useEffect} from 'react';
-import {View, Text, FlatList, StyleSheet} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+} from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {useDarkMode} from '../../DarkModeContext';
 import {RootStackParamList} from '../../Types';
+import base64 from 'react-native-base64';
+import * as Keychain from 'react-native-keychain';
 
 type TagScreenRouteProp = RouteProp<RootStackParamList, 'TagScreen'>;
 type TagScreenNavigationProp = StackNavigationProp<
@@ -33,20 +42,152 @@ const getDynamicStyles = (isDark: boolean) => {
 const TagScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
   const {isDarkMode} = useDarkMode();
   const dynamicStyles = getDynamicStyles(isDarkMode);
-  const {tags} = route.params;
+  const {repo, tags, url} = route.params;
+  const [credentials, setCredentials] = useState<{
+    username: string;
+    password: string;
+  }>({
+    username: '',
+    password: '',
+  });
+
+  useEffect(() => {
+    const loadCredentials = async () => {
+      const keychainCredentails = await Keychain.getGenericPassword({
+        service: url,
+      });
+
+      if (!keychainCredentails) {
+        throw new Error('No credentials found for this service');
+      }
+
+      const {username, password} = keychainCredentails;
+
+      setCredentials({username, password});
+    };
+
+    loadCredentials();
+  }, [navigation, url]);
+
+  function formatBytes(bytes: number): string {
+    const B = 1;
+    const KB = B * 1024;
+    const MB = KB * 1024;
+    const GB = MB * 1024;
+
+    let value: number;
+    let unit: string;
+
+    if (bytes >= GB) {
+      value = bytes / GB;
+      unit = 'GB';
+    } else if (bytes >= MB) {
+      value = bytes / MB;
+      unit = 'MB';
+    } else if (bytes >= KB) {
+      value = bytes / KB;
+      unit = 'KB';
+    } else {
+      value = bytes;
+      unit = 'B';
+    }
+
+    return `${value.toFixed(2)} ${unit}`;
+  }
+
+  const getBlob = async (digest: string) => {
+    try {
+      const {username, password} = credentials;
+      const auth = 'Basic ' + base64.encode(username + ':' + password);
+      const response = await fetch(`${url}/v2/${repo}/blobs/${digest}`, {
+        method: 'GET',
+        headers: {
+          Authorization: auth,
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok.');
+      }
+
+      const responseData = await response.json();
+      //architecure, os, created, author, config, rootfs
+      //return responseData.created;
+      return {
+        architecture: responseData.architecture,
+        os: responseData.os,
+        created: responseData.created,
+        author: responseData.author,
+        //config: responseData.config,
+        //rootfs: responseData.rootfs,
+      };
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error('Error in getBlob:', error.message);
+        Alert.alert('Error', error.message);
+      } else {
+        console.error('An unexpected error occurred:', error);
+        Alert.alert('Error', 'An unexpected error occurred');
+      }
+    }
+  };
+
+  const handlePress = async (tag: string) => {
+    try {
+      const {username, password} = credentials;
+      const auth = 'Basic ' + base64.encode(username + ':' + password);
+      const response = await fetch(`${url}/v2/${repo}/manifests/${tag}`, {
+        method: 'GET',
+        headers: {
+          Authorization: auth,
+          Accept: 'application/vnd.docker.distribution.manifest.v2+json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok.');
+      }
+
+      const responseData = await response.json();
+
+      let size = 0;
+      for (let i = 0; i < responseData.layers.length; i++) {
+        size += responseData.layers[i].size;
+      }
+
+      const poop = {
+        size: formatBytes(size),
+        digest: await getBlob(responseData.config.digest),
+      };
+
+      Alert.alert('Response', JSON.stringify(poop), [{text: 'OK'}]);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error('Error in handlePress:', error.message);
+        Alert.alert('Error', error.message);
+      } else {
+        console.error('An unexpected error occurred:', error);
+        Alert.alert('Error', 'An unexpected error occurred');
+      }
+    }
+  };
 
   useEffect(() => {
     navigation.setOptions({
-      title: route.params.repo,
+      title: repo,
     });
-  }, [navigation, route.params.repo]);
+  }, [navigation, repo]);
 
   return (
     <View style={dynamicStyles.container}>
       <FlatList
         data={tags}
         keyExtractor={item => item}
-        renderItem={({item}) => <Text style={dynamicStyles.text}>{item}</Text>}
+        renderItem={({item}) => (
+          <TouchableOpacity onPress={() => handlePress(item)}>
+            <View>
+              <Text style={dynamicStyles.text}>{item}</Text>
+            </View>
+          </TouchableOpacity>
+        )}
       />
     </View>
   );

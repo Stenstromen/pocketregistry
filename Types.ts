@@ -9,5 +9,12 @@ export type RootStackParamList = {
   TagScreen: {
     tags: string[];
     repo: string;
+    url: string;
+  };
+  TagDetailScreen: {
+    size: string;
+    architecture: string;
+    os: string;
+    author: string;
   };
 };

@@ -44,7 +44,9 @@ function StackNavigator(): JSX.Element {
           <Stack.Screen
             name="TagScreen"
             component={TagScreen}
-            options={({route}) => ({title: route.params.repo})}
+            options={({route}) => ({
+              title: route.params.repo,
+            })}
           />
         </Stack.Navigator>
       </NavigationContainer>
