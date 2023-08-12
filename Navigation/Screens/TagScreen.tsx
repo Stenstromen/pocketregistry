@@ -153,12 +153,34 @@ const TagScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
         size += responseData.layers[i].size;
       }
 
-      const poop = {
+      const manifest: {
+        size: string;
+        digest:
+          | {
+              author: string;
+              architecture: string;
+              os: string;
+              created: string;
+            }
+          | undefined;
+      } = {
         size: formatBytes(size),
         digest: await getBlob(responseData.config.digest),
       };
 
-      Alert.alert('Response', JSON.stringify(poop), [{text: 'OK'}]);
+      if (manifest.digest) {
+        navigation.navigate('TagDetails', {
+          tag: tag,
+          size: manifest.size,
+          architecture: manifest.digest.architecture,
+          os: manifest.digest.os,
+          created: manifest.digest.created,
+          author: manifest.digest.author,
+        });
+      } else {
+        // Handle the case where manifest.digest is undefined, if necessary
+        console.error('manifest.digest is undefined');
+      }
     } catch (error) {
       if (error instanceof Error) {
         console.error('Error in handlePress:', error.message);

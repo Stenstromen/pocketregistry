@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {useDarkMode} from '../../DarkModeContext';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -33,7 +33,14 @@ const getDynamicStyles = (isDark: boolean) => {
 const TagDetails: React.FC<TagDetailsProps> = ({route, navigation}) => {
   const {isDarkMode} = useDarkMode();
   const dynamicStyles = getDynamicStyles(isDarkMode);
-  const {size, architecture, os, author} = route.params;
+  const {tag, size, architecture, os, author, created} = route.params;
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: tag,
+    });
+  }, [navigation, tag]);
+
   return (
     <View style={dynamicStyles.container}>
       <Text>Tag Details</Text>
@@ -41,6 +48,7 @@ const TagDetails: React.FC<TagDetailsProps> = ({route, navigation}) => {
       <Text>Architecture: {architecture}</Text>
       <Text>OS: {os}</Text>
       <Text>Author: {author}</Text>
+      <Text>Created: {created}</Text>
     </View>
   );
 };

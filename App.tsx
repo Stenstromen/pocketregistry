@@ -52,12 +52,13 @@ function StackNavigator(): JSX.Element {
           <Stack.Screen
             name="TagDetails"
             component={TagDetails}
-            options={({route}) => ({
+            /*             options={({route}) => ({
               size: route.params.size,
               architecture: route.params.architecture,
               os: route.params.os,
               author: route.params.author,
-            })}
+              created: route.params.created,
+            })} */
           />
         </Stack.Navigator>
       </NavigationContainer>

@@ -12,9 +12,11 @@ export type RootStackParamList = {
     url: string;
   };
   TagDetails: {
+    tag: string;
     size: string;
     architecture: string;
     os: string;
     author: string;
+    created: string;
   };
 };
