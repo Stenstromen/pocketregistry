@@ -13,6 +13,7 @@ import FormScreen from './Navigation/Screens/FormScreen';
 import ListScreen from './Navigation/Screens/ListScreen';
 import RepositoryScreen from './Navigation/Screens/RepositoryScreen';
 import TagScreen from './Navigation/Screens/TagScreen';
+import TagDetails from './Navigation/Screens/TagDetails';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -46,6 +47,16 @@ function StackNavigator(): JSX.Element {
             component={TagScreen}
             options={({route}) => ({
               title: route.params.repo,
+            })}
+          />
+          <Stack.Screen
+            name="TagDetails"
+            component={TagDetails}
+            options={({route}) => ({
+              size: route.params.size,
+              architecture: route.params.architecture,
+              os: route.params.os,
+              author: route.params.author,
             })}
           />
         </Stack.Navigator>
