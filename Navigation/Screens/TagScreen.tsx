@@ -13,6 +13,7 @@ import {useDarkMode} from '../../DarkModeContext';
 import {RootStackParamList} from '../../Types';
 import base64 from 'react-native-base64';
 import * as Keychain from 'react-native-keychain';
+import SearchBar from '../../Components/SearchBar';
 
 type TagScreenRouteProp = RouteProp<RootStackParamList, 'TagScreen'>;
 type TagScreenNavigationProp = StackNavigationProp<
@@ -43,6 +44,7 @@ const TagScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
   const {isDarkMode} = useDarkMode();
   const dynamicStyles = getDynamicStyles(isDarkMode);
   const {repo, tags, url} = route.params;
+  const [searchText, setSearchText] = useState('');
   const [credentials, setCredentials] = useState<{
     username: string;
     password: string;
@@ -110,15 +112,11 @@ const TagScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
       }
 
       const responseData = await response.json();
-      //architecure, os, created, author, config, rootfs
-      //return responseData.created;
       return {
         architecture: responseData.architecture,
         os: responseData.os,
         created: responseData.created,
         author: responseData.author,
-        //config: responseData.config,
-        //rootfs: responseData.rootfs,
       };
     } catch (error) {
       if (error instanceof Error) {
@@ -170,6 +168,7 @@ const TagScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
 
       if (manifest.digest) {
         navigation.navigate('TagDetails', {
+          repo: repo,
           tag: tag,
           size: manifest.size,
           architecture: manifest.digest.architecture,
@@ -177,8 +176,8 @@ const TagScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
           created: manifest.digest.created,
           author: manifest.digest.author,
         });
+        setSearchText('');
       } else {
-        // Handle the case where manifest.digest is undefined, if necessary
         console.error('manifest.digest is undefined');
       }
     } catch (error) {
@@ -200,8 +199,13 @@ const TagScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
 
   return (
     <View style={dynamicStyles.container}>
+      <SearchBar
+        value={searchText}
+        onChange={text => setSearchText(text)}
+        isDarkMode={isDarkMode}
+      />
       <FlatList
-        data={tags}
+        data={tags.filter(item => item.includes(searchText))}
         keyExtractor={item => item}
         renderItem={({item}) => (
           <TouchableOpacity onPress={() => handlePress(item)}>

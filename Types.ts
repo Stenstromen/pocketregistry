@@ -12,6 +12,7 @@ export type RootStackParamList = {
     url: string;
   };
   TagDetails: {
+    repo: string;
     tag: string;
     size: string;
     architecture: string;

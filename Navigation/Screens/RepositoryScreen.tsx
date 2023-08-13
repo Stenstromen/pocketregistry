@@ -11,6 +11,7 @@ import base64 from 'react-native-base64';
 import * as Keychain from 'react-native-keychain';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import SearchBar from '../../Components/SearchBar';
 import {useDarkMode} from '../../DarkModeContext';
 import {RootStackParamList} from '../../Types';
 
@@ -46,6 +47,7 @@ const RepositoryScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
   const {isDarkMode} = useDarkMode();
   const dynamicStyles = getDynamicStyles(isDarkMode);
   const {data} = route.params;
+  const [searchText, setSearchText] = useState('');
   const [credentials, setCredentials] = useState<{
     username: string;
     password: string;
@@ -102,6 +104,7 @@ const RepositoryScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
         tags: responseData.tags,
         url: route.params.serviceName,
       });
+      setSearchText('');
     } catch (error) {
       if (error instanceof Error) {
         console.error('Error in handlePress:', error.message);
@@ -115,8 +118,13 @@ const RepositoryScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
 
   return (
     <View style={dynamicStyles.container}>
+      <SearchBar
+        value={searchText}
+        onChange={text => setSearchText(text)}
+        isDarkMode={isDarkMode}
+      />
       <FlatList
-        data={data}
+        data={data.filter(item => item.includes(searchText))}
         keyExtractor={item => item}
         renderItem={({item}) => (
           <TouchableOpacity onPress={() => handlePress(item)}>
