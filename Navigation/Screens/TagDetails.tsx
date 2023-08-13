@@ -136,6 +136,18 @@ const TagDetails: React.FC<TagDetailsProps> = ({route, navigation}) => {
 
       <View style={dynamicStyles.section}>
         <Text style={dynamicStyles.header}>Extended Information</Text>
+
+        <Text style={dynamicStyles.metaLabel}>Environment Variables:</Text>
+        <Text style={dynamicStyles.metaData}>Environment Variables:</Text>
+
+        <Text style={dynamicStyles.metaLabel}>Docker Version:</Text>
+        <Text style={dynamicStyles.metaData}>Docker Version</Text>
+
+        <Text style={dynamicStyles.metaLabel}>Base Image:</Text>
+        <Text style={dynamicStyles.metaData}>Base Image</Text>
+
+        <Text style={dynamicStyles.metaLabel}>Entrypoint:</Text>
+        <Text style={dynamicStyles.metaData}>Entrypoint</Text>
       </View>
 
       <View style={dynamicStyles.section}>
