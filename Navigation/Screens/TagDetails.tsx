@@ -152,12 +152,7 @@ const TagDetails: React.FC<TagDetailsProps> = ({route, navigation}) => {
 
       <View style={dynamicStyles.section}>
         <Text style={dynamicStyles.header}>Actions</Text>
-        <Text>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum officiis
-          quis quae cumque obcaecati aperiam accusamus tempore, voluptas
-          eligendi aspernatur quasi quisquam maxime corporis vero, quas magni
-          dicta molestias fugiat?
-        </Text>
+        <Text>Todo</Text>
       </View>
     </ScrollView>
   );
