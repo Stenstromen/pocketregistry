@@ -12,7 +12,6 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {useDarkMode} from '../../DarkModeContext';
 import {RootStackParamList} from '../../Types';
 import base64 from 'react-native-base64';
-import * as Keychain from 'react-native-keychain';
 import SearchBar from '../../Components/SearchBar';
 
 type TagScreenRouteProp = RouteProp<RootStackParamList, 'TagScreen'>;
@@ -43,33 +42,8 @@ const getDynamicStyles = (isDark: boolean) => {
 const TagScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
   const {isDarkMode} = useDarkMode();
   const dynamicStyles = getDynamicStyles(isDarkMode);
-  const {repo, tags, url} = route.params;
+  const {repo, tags, url, username, password} = route.params;
   const [searchText, setSearchText] = useState('');
-  const [credentials, setCredentials] = useState<{
-    username: string;
-    password: string;
-  }>({
-    username: '',
-    password: '',
-  });
-
-  useEffect(() => {
-    const loadCredentials = async () => {
-      const keychainCredentails = await Keychain.getGenericPassword({
-        service: url,
-      });
-
-      if (!keychainCredentails) {
-        throw new Error('No credentials found for this service');
-      }
-
-      const {username, password} = keychainCredentails;
-
-      setCredentials({username, password});
-    };
-
-    loadCredentials();
-  }, [navigation, url]);
 
   function formatBytes(bytes: number): string {
     const B = 1;
@@ -99,7 +73,6 @@ const TagScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
 
   const getBlob = async (digest: string) => {
     try {
-      const {username, password} = credentials;
       const auth = 'Basic ' + base64.encode(username + ':' + password);
       const response = await fetch(`${url}/v2/${repo}/blobs/${digest}`, {
         method: 'GET',
@@ -117,6 +90,8 @@ const TagScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
         os: responseData.os,
         created: responseData.created,
         author: responseData.author,
+        env: responseData.config.Env,
+        entrypoint: responseData.config.Entrypoint,
       };
     } catch (error) {
       if (error instanceof Error) {
@@ -131,7 +106,6 @@ const TagScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
 
   const handlePress = async (tag: string) => {
     try {
-      const {username, password} = credentials;
       const auth = 'Basic ' + base64.encode(username + ':' + password);
       const response = await fetch(`${url}/v2/${repo}/manifests/${tag}`, {
         method: 'GET',
@@ -153,28 +127,38 @@ const TagScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
 
       const manifest: {
         size: string;
+        version: number;
+        repodigest: string;
         digest:
           | {
               author: string;
               architecture: string;
               os: string;
               created: string;
+              env: string[];
+              entrypoint: string[];
             }
           | undefined;
       } = {
         size: formatBytes(size),
+        version: responseData.schemaVersion,
         digest: await getBlob(responseData.config.digest),
+        repodigest: responseData.config.digest,
       };
 
       if (manifest.digest) {
         navigation.navigate('TagDetails', {
+          url: url.replace(/^https?:\/\//, ''),
           repo: repo,
           tag: tag,
+          version: manifest.version,
           size: manifest.size,
           architecture: manifest.digest.architecture,
           os: manifest.digest.os,
           created: manifest.digest.created,
-          author: manifest.digest.author,
+          env: manifest.digest.env,
+          entrypoint: manifest.digest.entrypoint,
+          repodigest: manifest.repodigest,
         });
         setSearchText('');
       } else {

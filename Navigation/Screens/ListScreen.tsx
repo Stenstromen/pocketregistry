@@ -49,9 +49,7 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
     const loadCredentials = async () => {
       const availableCredentials =
         await Keychain.getAllGenericPasswordServices();
-      // Update the credentials state.
       setCredentials(availableCredentials.map(service => ({service})));
-      // If the credentials list is empty, navigate to 'PocketRegistry'.
       if (availableCredentials.length === 0) {
         navigation.navigate('PocketRegistry');
       }
@@ -72,18 +70,16 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
       Alert.alert('Error deleting ' + service);
     }
   };
-  const handleCredentialPress = async (service: string) => {
+  const handleCredentialPress = async (url: string) => {
     try {
-      const credentials = await Keychain.getGenericPassword({service});
+      const credentials = await Keychain.getGenericPassword({service: url});
       if (credentials) {
         const {username, password} = credentials;
-        const repositories = await fetchRepositories(
-          service,
+        const repositories = await fetchRepositories(url, username, password);
+        navigation.navigate('RepositoryScreen', {
+          serviceName: url,
           username,
           password,
-        );
-        navigation.navigate('RepositoryScreen', {
-          serviceName: service,
           data: repositories,
         });
       } else {

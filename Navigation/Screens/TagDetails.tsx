@@ -1,10 +1,12 @@
 import React, {useEffect} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, Alert} from 'react-native';
 import {useDarkMode} from '../../DarkModeContext';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../../Types';
 import {RouteProp} from '@react-navigation/native';
 import {ScrollView} from 'react-native-gesture-handler';
+import Clipboard from '@react-native-clipboard/clipboard';
+import {TouchableOpacity} from 'react-native';
 
 type TagDetailsScreenRouteProp = RouteProp<RootStackParamList, 'TagDetails'>;
 type TagDetailsScreenNavigationProp = StackNavigationProp<
@@ -23,12 +25,6 @@ const getDynamicStyles = (isDark: boolean) => {
       flex: 1,
       padding: 16,
       backgroundColor: isDark ? '#333' : '#f0f0f0',
-    },
-    title: {
-      fontSize: 28,
-      fontWeight: 'bold',
-      marginBottom: 20,
-      color: isDark ? '#ccc' : '#333',
     },
     section: {
       marginBottom: 20,
@@ -52,6 +48,13 @@ const getDynamicStyles = (isDark: boolean) => {
       marginBottom: 10,
       color: isDark ? '#ccc' : '#333',
     },
+    button: {
+      padding: 10,
+      backgroundColor: isDark ? '#444' : '#ddd',
+      borderRadius: 5,
+      marginTop: 10,
+      alignItems: 'center',
+    },
   });
 };
 
@@ -64,10 +67,8 @@ function formatDateAndDaysAgo(dateString: string): DateAndDaysAgo {
   const inputDate = new Date(dateString);
   const currentDate = new Date();
 
-  // Format the date to "YYYY-MM-DD"
   const formattedDate = inputDate.toISOString().split('T')[0];
 
-  // Compute days difference
   const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
   const daysDifference = Math.floor(
     (currentDate.getTime() - inputDate.getTime()) / oneDayInMilliseconds,
@@ -91,8 +92,25 @@ function formatDateAndDaysAgo(dateString: string): DateAndDaysAgo {
 const TagDetails: React.FC<TagDetailsProps> = ({route, navigation}) => {
   const {isDarkMode} = useDarkMode();
   const dynamicStyles = getDynamicStyles(isDarkMode);
-  const {repo, tag, size, architecture, os, author, created} = route.params;
+  const {
+    url,
+    repo,
+    tag,
+    version,
+    size,
+    architecture,
+    os,
+    created,
+    env,
+    entrypoint,
+    repodigest,
+  } = route.params;
   const tagdate = formatDateAndDaysAgo(created);
+
+  const copyPullCommand = (textToCopy: string): void => {
+    Clipboard.setString(textToCopy);
+    Alert.alert('Copied to clipboard!');
+  };
 
   useEffect(() => {
     navigation.setOptions({
@@ -103,8 +121,6 @@ const TagDetails: React.FC<TagDetailsProps> = ({route, navigation}) => {
 
   return (
     <ScrollView style={dynamicStyles.container}>
-      <Text style={dynamicStyles.title}>Tag Details</Text>
-
       <View style={dynamicStyles.section}>
         <Text style={dynamicStyles.header}>Overview</Text>
         <Text style={dynamicStyles.metaLabel}>Tag:</Text>
@@ -123,11 +139,6 @@ const TagDetails: React.FC<TagDetailsProps> = ({route, navigation}) => {
         <Text style={dynamicStyles.metaLabel}>OS:</Text>
         <Text style={dynamicStyles.metaData}>{os}</Text>
 
-        <Text style={dynamicStyles.metaLabel}>Author:</Text>
-        <Text style={dynamicStyles.metaData}>
-          {author ? author : 'Unknown'}
-        </Text>
-
         <Text style={dynamicStyles.metaLabel}>Created:</Text>
         <Text style={dynamicStyles.metaData}>
           {tagdate.formattedDate} ({tagdate.daysAgo})
@@ -137,22 +148,43 @@ const TagDetails: React.FC<TagDetailsProps> = ({route, navigation}) => {
       <View style={dynamicStyles.section}>
         <Text style={dynamicStyles.header}>Extended Information</Text>
 
-        <Text style={dynamicStyles.metaLabel}>Environment Variables:</Text>
-        <Text style={dynamicStyles.metaData}>Environment Variables:</Text>
+        <Text style={dynamicStyles.metaLabel}>Digest</Text>
+        <Text style={dynamicStyles.metaData}>{repodigest}</Text>
 
         <Text style={dynamicStyles.metaLabel}>Docker Version:</Text>
-        <Text style={dynamicStyles.metaData}>Docker Version</Text>
+        <Text style={dynamicStyles.metaData}>{version}</Text>
 
-        <Text style={dynamicStyles.metaLabel}>Base Image:</Text>
-        <Text style={dynamicStyles.metaData}>Base Image</Text>
+        <Text style={dynamicStyles.metaLabel}>Environment Variables:</Text>
+        {env?.map((variable, index) => (
+          <Text key={index} style={dynamicStyles.metaData}>
+            {'- ' + variable}
+          </Text>
+        ))}
 
         <Text style={dynamicStyles.metaLabel}>Entrypoint:</Text>
-        <Text style={dynamicStyles.metaData}>Entrypoint</Text>
+        {entrypoint ? (
+          entrypoint.map((variable, index) => (
+            <Text key={index} style={dynamicStyles.metaData}>
+              {'- ' + variable}
+            </Text>
+          ))
+        ) : (
+          <Text style={dynamicStyles.metaData}>Unknown</Text>
+        )}
       </View>
 
       <View style={dynamicStyles.section}>
         <Text style={dynamicStyles.header}>Actions</Text>
-        <Text>Todo</Text>
+        <TouchableOpacity
+          style={dynamicStyles.button}
+          onPress={() => copyPullCommand(`docker pull ${url}/${repo}:${tag}`)}>
+          <Text style={dynamicStyles.metaData}>Copy Pull Command</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={dynamicStyles.button}
+          onPress={() => copyPullCommand(repodigest)}>
+          <Text style={dynamicStyles.metaData}>Copy Digest</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );

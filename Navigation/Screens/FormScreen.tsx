@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
 import {
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import CheckBox from '@react-native-community/checkbox';
 import * as Keychain from 'react-native-keychain';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {useDarkMode} from '../../DarkModeContext';
@@ -84,9 +84,12 @@ const FormScreen: React.FC<Props> = ({navigation}) => {
         style={dynamicStyles.text}
       />
       <View style={styles.checkboxContainer}>
-        <CheckBox
+        <Switch
+          trackColor={{false: '#767577', true: '#81b0ff'}}
+          thumbColor={secure ? '#f5dd4b' : '#f4f3f4'}
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={() => setSecure(!secure)}
           value={secure}
-          onValueChange={setSecure}
           style={styles.checkbox}
         />
         <Text style={dynamicStyles.label}>Secure (https)</Text>
