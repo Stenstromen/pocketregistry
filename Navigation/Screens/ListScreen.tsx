@@ -126,7 +126,9 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
         data={credentials}
         keyExtractor={item => item.service}
         renderItem={({item}) => (
-          <TouchableOpacity onPress={() => handleCredentialPress(item.service)}>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => handleCredentialPress(item.service)}>
             <View style={dynamicStyles.rowFront}>
               <Text style={dynamicStyles.text}>
                 {item.service.replace(/^https?:\/\//, '')}
@@ -156,25 +158,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  text: {
-    padding: 20,
-    fontSize: 25,
-  },
-  /*   rowFront: {
-    alignItems: 'center',
-    backgroundColor: '#FFF',
-    borderBottomColor: 'black',
-    borderBottomWidth: 1,
-    justifyContent: 'center',
-    height: 60,
-  },
-  rowBack: {
-    alignItems: 'center',
-    backgroundColor: '#DDD',
-    flex: 1,
-    flexDirection: 'row',
-    paddingLeft: 15,
-  }, */
   backRightBtn: {
     alignItems: 'center',
     bottom: 0,

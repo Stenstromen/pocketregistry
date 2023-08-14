@@ -99,6 +99,10 @@ const RepositoryScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
 
       const responseData = await response.json();
 
+      if (!responseData.tags) {
+        return Alert.alert('Error', 'No tags found for this repository');
+      }
+
       navigation.navigate('TagScreen', {
         repo: tag,
         tags: responseData.tags,
