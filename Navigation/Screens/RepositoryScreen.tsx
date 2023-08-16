@@ -50,7 +50,9 @@ const RepositoryScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
 
   useEffect(() => {
     navigation.setOptions({
-      title: route.params.serviceName.replace(/^https?:\/\//, ''),
+      title: route.params.serviceName
+        .replace(/^https?:\/\//, '')
+        .replace(/:.*/, ''),
     });
   }, [navigation, route.params.serviceName]);
 

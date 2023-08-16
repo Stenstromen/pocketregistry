@@ -127,7 +127,7 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
             onPress={() => handleCredentialPress(item.service)}>
             <View style={dynamicStyles.rowFront}>
               <Text style={dynamicStyles.text}>
-                {item.service.replace(/^https?:\/\//, '')}
+                {item.service.replace(/^https?:\/\//, '').replace(/:.*/, '')}
               </Text>
             </View>
           </TouchableOpacity>

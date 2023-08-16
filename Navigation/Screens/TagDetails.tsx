@@ -1,12 +1,14 @@
 import React, {useEffect} from 'react';
-import {View, Text, StyleSheet, Alert} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import {useDarkMode} from '../../DarkModeContext';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../../Types';
+import {formatDateAndDaysAgo} from '../../Utils';
 import {RouteProp} from '@react-navigation/native';
 import {ScrollView} from 'react-native-gesture-handler';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {TouchableOpacity} from 'react-native';
+import Toast from 'react-native-root-toast';
 
 type TagDetailsScreenRouteProp = RouteProp<RootStackParamList, 'TagDetails'>;
 type TagDetailsScreenNavigationProp = StackNavigationProp<
@@ -58,37 +60,6 @@ const getDynamicStyles = (isDark: boolean) => {
   });
 };
 
-type DateAndDaysAgo = {
-  formattedDate: string;
-  daysAgo: string;
-};
-
-function formatDateAndDaysAgo(dateString: string): DateAndDaysAgo {
-  const inputDate = new Date(dateString);
-  const currentDate = new Date();
-
-  const formattedDate = inputDate.toISOString().split('T')[0];
-
-  const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
-  const daysDifference = Math.floor(
-    (currentDate.getTime() - inputDate.getTime()) / oneDayInMilliseconds,
-  );
-
-  let daysAgo = '';
-  if (daysDifference === 0) {
-    daysAgo = 'Today';
-  } else if (daysDifference === 1) {
-    daysAgo = '1 day ago';
-  } else {
-    daysAgo = `${daysDifference} days ago`;
-  }
-
-  return {
-    formattedDate,
-    daysAgo,
-  };
-}
-
 const TagDetails: React.FC<TagDetailsProps> = ({route, navigation}) => {
   const {isDarkMode} = useDarkMode();
   const dynamicStyles = getDynamicStyles(isDarkMode);
@@ -109,7 +80,10 @@ const TagDetails: React.FC<TagDetailsProps> = ({route, navigation}) => {
 
   const copyPullCommand = (textToCopy: string): void => {
     Clipboard.setString(textToCopy);
-    Alert.alert('Copied to clipboard!');
+    Toast.show('Copied to Clipboard!', {
+      position: Toast.positions.TOP,
+      duration: Toast.durations.SHORT,
+    });
   };
 
   useEffect(() => {

@@ -14,6 +14,7 @@ import ListScreen from './Navigation/Screens/ListScreen';
 import RepositoryScreen from './Navigation/Screens/RepositoryScreen';
 import TagScreen from './Navigation/Screens/TagScreen';
 import TagDetails from './Navigation/Screens/TagDetails';
+import {RootSiblingParent} from 'react-native-root-siblings';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -58,9 +59,11 @@ function StackNavigator(): JSX.Element {
 
 function App(): JSX.Element {
   return (
-    <DarkModeProvider>
-      <StackNavigator />
-    </DarkModeProvider>
+    <RootSiblingParent>
+      <DarkModeProvider>
+        <StackNavigator />
+      </DarkModeProvider>
+    </RootSiblingParent>
   );
 }
 

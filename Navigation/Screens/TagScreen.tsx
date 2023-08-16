@@ -11,6 +11,7 @@ import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {useDarkMode} from '../../DarkModeContext';
 import {RootStackParamList} from '../../Types';
+import {formatBytes} from '../../Utils';
 import base64 from 'react-native-base64';
 import SearchBar from '../../Components/SearchBar';
 
@@ -44,32 +45,6 @@ const TagScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
   const dynamicStyles = getDynamicStyles(isDarkMode);
   const {repo, tags, url, username, password} = route.params;
   const [searchText, setSearchText] = useState('');
-
-  function formatBytes(bytes: number): string {
-    const B = 1;
-    const KB = B * 1024;
-    const MB = KB * 1024;
-    const GB = MB * 1024;
-
-    let value: number;
-    let unit: string;
-
-    if (bytes >= GB) {
-      value = bytes / GB;
-      unit = 'GB';
-    } else if (bytes >= MB) {
-      value = bytes / MB;
-      unit = 'MB';
-    } else if (bytes >= KB) {
-      value = bytes / KB;
-      unit = 'KB';
-    } else {
-      value = bytes;
-      unit = 'B';
-    }
-
-    return `${value.toFixed(2)} ${unit}`;
-  }
 
   const getBlob = async (digest: string) => {
     try {
