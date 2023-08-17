@@ -1,3 +1,5 @@
+import Toast from 'react-native-root-toast';
+
 type DateAndDaysAgo = {
   formattedDate: string;
   daysAgo: string;
@@ -53,4 +55,11 @@ export function formatBytes(bytes: number): string {
   }
 
   return `${value.toFixed(2)} ${unit}`;
+}
+
+export function showToast(message: string) {
+  Toast.show(message, {
+    position: Toast.positions.TOP,
+    duration: Toast.durations.SHORT,
+  });
 }

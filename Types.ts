@@ -29,3 +29,9 @@ export type RootStackParamList = {
     repodigest: string;
   };
 };
+
+export interface RenderSearchBarProps {
+  searchText: string;
+  setSearchText: (text: string) => void;
+  isDarkMode: boolean;
+}

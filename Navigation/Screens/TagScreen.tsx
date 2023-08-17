@@ -1,19 +1,27 @@
+// React imports
 import React, {useEffect, useState} from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  Alert,
-  TouchableOpacity,
-} from 'react-native';
+
+// React Native components
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+
+// Navigation related imports
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+
+// Contexts
 import {useDarkMode} from '../../DarkModeContext';
-import {RootStackParamList} from '../../Types';
-import {formatBytes} from '../../Utils';
-import base64 from 'react-native-base64';
+
+// Custom components
 import SearchBar from '../../Components/SearchBar';
+
+// Type definitions
+import {RootStackParamList, RenderSearchBarProps} from '../../Types';
+
+// Utilities and helpers
+import {formatBytes, showToast} from '../../Utils';
+
+// External libraries
+import base64 from 'react-native-base64';
 
 type TagScreenRouteProp = RouteProp<RootStackParamList, 'TagScreen'>;
 type TagScreenNavigationProp = StackNavigationProp<
@@ -38,6 +46,20 @@ const getDynamicStyles = (isDark: boolean) => {
       color: isDark ? '#ccc' : '#333',
     },
   });
+};
+
+const RenderSearchBar: React.FC<RenderSearchBarProps> = ({
+  searchText,
+  setSearchText,
+  isDarkMode,
+}) => {
+  return (
+    <SearchBar
+      value={searchText}
+      onChange={text => setSearchText(text)}
+      isDarkMode={isDarkMode}
+    />
+  );
 };
 
 const TagScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
@@ -71,10 +93,10 @@ const TagScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
     } catch (error) {
       if (error instanceof Error) {
         console.error('Error in getBlob:', error.message);
-        Alert.alert('Error', error.message);
+        showToast(error.message);
       } else {
         console.error('An unexpected error occurred:', error);
-        Alert.alert('Error', 'An unexpected error occurred');
+        showToast('An unexpected error occurred');
       }
     }
   };
@@ -142,10 +164,10 @@ const TagScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
     } catch (error) {
       if (error instanceof Error) {
         console.error('Error in handlePress:', error.message);
-        Alert.alert('Error', error.message);
+        showToast(error.message);
       } else {
         console.error('An unexpected error occurred:', error);
-        Alert.alert('Error', 'An unexpected error occurred');
+        showToast('An unexpected error occurred');
       }
     }
   };
@@ -158,14 +180,16 @@ const TagScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
 
   return (
     <View style={dynamicStyles.container}>
-      <SearchBar
-        value={searchText}
-        onChange={text => setSearchText(text)}
-        isDarkMode={isDarkMode}
-      />
       <FlatList
         data={tags.filter(item => item.includes(searchText))}
         keyExtractor={item => item}
+        ListHeaderComponent={
+          <RenderSearchBar
+            searchText={searchText}
+            setSearchText={setSearchText}
+            isDarkMode={isDarkMode}
+          />
+        }
         renderItem={({item}) => (
           <TouchableOpacity onPress={() => handlePress(item)}>
             <View>

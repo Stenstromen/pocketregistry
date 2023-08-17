@@ -1,14 +1,25 @@
+// React imports
 import React, {useEffect} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import {useDarkMode} from '../../DarkModeContext';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {RootStackParamList} from '../../Types';
-import {formatDateAndDaysAgo} from '../../Utils';
-import {RouteProp} from '@react-navigation/native';
+
+// React Native components
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
+
+// Navigation related imports
+import {StackNavigationProp} from '@react-navigation/stack';
+import {RouteProp} from '@react-navigation/native';
+
+// Contexts
+import {useDarkMode} from '../../DarkModeContext';
+
+// Type definitions
+import {RootStackParamList} from '../../Types';
+
+// Utilities and helpers
+import {formatDateAndDaysAgo, showToast} from '../../Utils';
+
+// External libraries
 import Clipboard from '@react-native-clipboard/clipboard';
-import {TouchableOpacity} from 'react-native';
-import Toast from 'react-native-root-toast';
 
 type TagDetailsScreenRouteProp = RouteProp<RootStackParamList, 'TagDetails'>;
 type TagDetailsScreenNavigationProp = StackNavigationProp<
@@ -80,10 +91,7 @@ const TagDetails: React.FC<TagDetailsProps> = ({route, navigation}) => {
 
   const copyPullCommand = (textToCopy: string): void => {
     Clipboard.setString(textToCopy);
-    Toast.show('Copied to Clipboard!', {
-      position: Toast.positions.TOP,
-      duration: Toast.durations.SHORT,
-    });
+    showToast('Copied to Clipboard!');
   };
 
   useEffect(() => {

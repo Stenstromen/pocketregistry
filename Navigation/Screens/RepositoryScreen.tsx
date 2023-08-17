@@ -1,18 +1,27 @@
+// React imports
 import React, {useEffect, useState} from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  Alert,
-  TouchableOpacity,
-} from 'react-native';
-import base64 from 'react-native-base64';
+
+// React Native components
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+
+// Navigation related imports
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+
+// Custom components
 import SearchBar from '../../Components/SearchBar';
+
+// Contexts
 import {useDarkMode} from '../../DarkModeContext';
-import {RootStackParamList} from '../../Types';
+
+// Type definitions
+import {RootStackParamList, RenderSearchBarProps} from '../../Types';
+
+// Utilities and helpers
+import {showToast} from '../../Utils';
+
+// External libraries
+import base64 from 'react-native-base64';
 
 type RepositoryScreenRouteProp = RouteProp<
   RootStackParamList,
@@ -40,6 +49,20 @@ const getDynamicStyles = (isDark: boolean) => {
       color: isDark ? '#ccc' : '#333',
     },
   });
+};
+
+const RenderSearchBar: React.FC<RenderSearchBarProps> = ({
+  searchText,
+  setSearchText,
+  isDarkMode,
+}) => {
+  return (
+    <SearchBar
+      value={searchText}
+      onChange={text => setSearchText(text)}
+      isDarkMode={isDarkMode}
+    />
+  );
 };
 
 const RepositoryScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
@@ -77,7 +100,7 @@ const RepositoryScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
       const responseData = await response.json();
 
       if (!responseData.tags) {
-        return Alert.alert('Error', 'No tags found for this repository');
+        return showToast('No tags found for this repository');
       }
 
       navigation.navigate('TagScreen', {
@@ -91,24 +114,26 @@ const RepositoryScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
     } catch (error) {
       if (error instanceof Error) {
         console.error('Error in handlePress:', error.message);
-        Alert.alert('Error', error.message);
+        showToast(error.message);
       } else {
         console.error('An unexpected error occurred:', error);
-        Alert.alert('Error', 'An unexpected error occurred');
+        showToast('An unexpected error occurred');
       }
     }
   };
 
   return (
     <View style={dynamicStyles.container}>
-      <SearchBar
-        value={searchText}
-        onChange={text => setSearchText(text)}
-        isDarkMode={isDarkMode}
-      />
       <FlatList
         data={data.filter(item => item.includes(searchText))}
         keyExtractor={item => item}
+        ListHeaderComponent={
+          <RenderSearchBar
+            searchText={searchText}
+            setSearchText={setSearchText}
+            isDarkMode={isDarkMode}
+          />
+        }
         renderItem={({item}) => (
           <TouchableOpacity onPress={() => handlePress(item)}>
             <View>

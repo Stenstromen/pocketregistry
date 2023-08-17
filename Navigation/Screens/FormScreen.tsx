@@ -1,4 +1,7 @@
+// React imports
 import React, {useState} from 'react';
+
+// React Native component imports
 import {
   StyleSheet,
   Switch,
@@ -7,10 +10,21 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import * as Keychain from 'react-native-keychain';
+
+// Navigation related imports
 import {StackNavigationProp} from '@react-navigation/stack';
+
+// Utilities and helpers
+import {showToast} from '../../Utils';
+
+// Contexts
 import {useDarkMode} from '../../DarkModeContext';
+
+// Type definitions
 import {RootStackParamList} from '../../Types';
+
+// External libraries
+import * as Keychain from 'react-native-keychain';
 
 type FormScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 
@@ -44,6 +58,10 @@ const FormScreen: React.FC<Props> = ({navigation}) => {
   const dynamicStyles = getDynamicStyles(isDarkMode);
 
   const handleSave = async () => {
+    if (!hostname || !username || !password) {
+      showToast('Please fill out all the * fields');
+      return;
+    }
     const protocol = secure ? 'https://' : 'http://';
     const portSegment = port ? `:${port}` : '';
     const fullHostname = `${protocol}${hostname}${portSegment}`;
@@ -51,6 +69,7 @@ const FormScreen: React.FC<Props> = ({navigation}) => {
     await Keychain.setGenericPassword(username, password, {
       service: fullHostname,
     });
+    showToast(`${hostname} added!`);
     navigation.navigate('PocketRegistry');
   };
 
@@ -58,7 +77,7 @@ const FormScreen: React.FC<Props> = ({navigation}) => {
     <View style={styles.container}>
       <View>
         <TextInput
-          placeholder="Hostname"
+          placeholder="Hostname *"
           onChangeText={setHostname}
           value={hostname}
           autoFocus
@@ -78,7 +97,7 @@ const FormScreen: React.FC<Props> = ({navigation}) => {
           style={dynamicStyles.text}
         />
         <TextInput
-          placeholder="Username"
+          placeholder="Username *"
           onChangeText={setUsername}
           value={username}
           autoCapitalize="none"
@@ -87,7 +106,7 @@ const FormScreen: React.FC<Props> = ({navigation}) => {
           style={dynamicStyles.text}
         />
         <TextInput
-          placeholder="Password"
+          placeholder="Password *"
           onChangeText={setPassword}
           value={password}
           secureTextEntry

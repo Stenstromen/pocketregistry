@@ -1,19 +1,29 @@
+// React imports
 import React from 'react';
+
+// React Navigation imports
 import {
   NavigationContainer,
   DefaultTheme,
   DarkTheme,
 } from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {DarkModeProvider} from './DarkModeContext';
-import {useDarkMode} from './DarkModeContext';
+
+// Contexts
+import {DarkModeProvider, useDarkMode} from './DarkModeContext';
+
+// Type definitions
 import {RootStackParamList} from './Types';
+
+// Screens
 import MainScreen from './Navigation/MainScreen';
 import FormScreen from './Navigation/Screens/FormScreen';
 import ListScreen from './Navigation/Screens/ListScreen';
 import RepositoryScreen from './Navigation/Screens/RepositoryScreen';
 import TagScreen from './Navigation/Screens/TagScreen';
 import TagDetails from './Navigation/Screens/TagDetails';
+
+// External libraries
 import {RootSiblingParent} from 'react-native-root-siblings';
 
 const Stack = createStackNavigator<RootStackParamList>();

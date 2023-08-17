@@ -1,10 +1,21 @@
+// React imports
 import React, {useCallback, useState} from 'react';
+
+// React Native imports
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+
+// Navigation related imports
 import {StackNavigationProp} from '@react-navigation/stack';
-import * as Keychain from 'react-native-keychain';
 import {useFocusEffect} from '@react-navigation/native';
+
+// Custom hooks and context
 import {useDarkMode} from '../DarkModeContext';
+
+// Types and models
 import {RootStackParamList} from '../Types';
+
+// External libraries
+import * as Keychain from 'react-native-keychain';
 
 type MainScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 
@@ -18,13 +29,13 @@ const getDynamicStyles = (isDark: boolean) => {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: isDark ? '#333' : '#fff', // dark background for dark mode, white for light mode
+      backgroundColor: isDark ? '#333' : '#fff',
     },
     image: {
       width: 300,
       height: 200,
       marginBottom: 20,
-      tintColor: isDark ? 'white' : 'black', // this will change the color of the image, make sure it makes sense for your image
+      tintColor: isDark ? 'white' : 'black',
     },
   });
 };

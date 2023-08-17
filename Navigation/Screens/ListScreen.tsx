@@ -1,12 +1,28 @@
-/* eslint-disable @typescript-eslint/no-shadow */
-import React, {useEffect, useState} from 'react';
-import {Text, View, TouchableOpacity, StyleSheet, Alert} from 'react-native';
-import {SwipeListView} from 'react-native-swipe-list-view';
+// React imports
+import React, {useEffect, useRef, useState} from 'react';
+
+// React Native components and animations
+import {Animated, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+
+// Navigation related imports
+import {StackNavigationProp} from '@react-navigation/stack';
+
+// Contexts
+import {useDarkMode} from '../../DarkModeContext';
+
+// Type definitions
+import {RootStackParamList} from '../../Types';
+
+// Utilities and helpers
+import {showToast} from '../../Utils';
+
+// External libraries and components
 import * as Keychain from 'react-native-keychain';
 import base64 from 'react-native-base64';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {useDarkMode} from '../../DarkModeContext';
-import {RootStackParamList} from '../../Types';
+import {SwipeListView} from 'react-native-swipe-list-view';
+
+// ESLint disabling comment
+/* eslint-disable @typescript-eslint/no-shadow */
 
 type FormScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 
@@ -44,6 +60,7 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
   const {isDarkMode} = useDarkMode();
   const dynamicStyles = getDynamicStyles(isDarkMode);
   const [credentials, setCredentials] = useState<Array<{service: string}>>([]);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     const loadCredentials = async () => {
@@ -66,9 +83,29 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
           await Keychain.getAllGenericPasswordServices();
         setCredentials(availableCredentials.map(service => ({service})));
       }
+      showToast(
+        `${service.replace(/^https?:\/\//, '').replace(/:.*/, '')} removed`,
+      );
     } catch (error) {
-      Alert.alert('Error deleting ' + service);
+      showToast('Error deleting ' + service);
     }
+  };
+
+  const handlePress = (service: string) => {
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 0.95,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      handleCredentialPress(service);
+    });
   };
   const handleCredentialPress = async (url: string) => {
     try {
@@ -124,12 +161,16 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
         renderItem={({item}) => (
           <TouchableOpacity
             activeOpacity={1}
-            onPress={() => handleCredentialPress(item.service)}>
-            <View style={dynamicStyles.rowFront}>
+            onPress={() => handlePress(item.service)}>
+            <Animated.View
+              style={[
+                dynamicStyles.rowFront,
+                {transform: [{scale: scaleAnim}]},
+              ]}>
               <Text style={dynamicStyles.text}>
                 {item.service.replace(/^https?:\/\//, '').replace(/:.*/, '')}
               </Text>
-            </View>
+            </Animated.View>
           </TouchableOpacity>
         )}
         renderHiddenItem={({item}) => (
