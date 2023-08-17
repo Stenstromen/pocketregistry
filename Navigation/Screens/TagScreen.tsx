@@ -19,9 +19,7 @@ import {RootStackParamList, RenderSearchBarProps} from '../../Types';
 
 // Utilities and helpers
 import {formatBytes, showToast} from '../../Utils';
-
-// External libraries
-import base64 from 'react-native-base64';
+import {fetchBlob, fetchManifest} from '../../Api';
 
 type TagScreenRouteProp = RouteProp<RootStackParamList, 'TagScreen'>;
 type TagScreenNavigationProp = StackNavigationProp<
@@ -70,17 +68,10 @@ const TagScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
 
   const getBlob = async (digest: string) => {
     try {
-      const auth = 'Basic ' + base64.encode(username + ':' + password);
-      const response = await fetch(`${url}/v2/${repo}/blobs/${digest}`, {
-        method: 'GET',
-        headers: {
-          Authorization: auth,
-        },
-      });
+      const response = await fetchBlob(url, username, password, repo, digest);
       if (!response.ok) {
         throw new Error('Network response was not ok.');
       }
-
       const responseData = await response.json();
       return {
         architecture: responseData.architecture,
@@ -103,14 +94,15 @@ const TagScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
 
   const handlePress = async (tag: string) => {
     try {
-      const auth = 'Basic ' + base64.encode(username + ':' + password);
+      /*       const auth = 'Basic ' + base64.encode(username + ':' + password);
       const response = await fetch(`${url}/v2/${repo}/manifests/${tag}`, {
         method: 'GET',
         headers: {
           Authorization: auth,
           Accept: 'application/vnd.docker.distribution.manifest.v2+json',
         },
-      });
+      }); */
+      const response = await fetchManifest(url, username, password, repo, tag);
       if (!response.ok) {
         throw new Error('Network response was not ok.');
       }

@@ -18,10 +18,8 @@ import {useDarkMode} from '../../DarkModeContext';
 import {RootStackParamList, RenderSearchBarProps} from '../../Types';
 
 // Utilities and helpers
+import {fetchTags} from '../../Api';
 import {showToast} from '../../Utils';
-
-// External libraries
-import base64 from 'react-native-base64';
 
 type RepositoryScreenRouteProp = RouteProp<
   RootStackParamList,
@@ -81,16 +79,11 @@ const RepositoryScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
 
   const handlePress = async (tag: string) => {
     try {
-      const auth = 'Basic ' + base64.encode(username + ':' + password);
-
-      const response = await fetch(
-        `${route.params.serviceName}/v2/${tag}/tags/list`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: auth,
-          },
-        },
+      const response = await fetchTags(
+        route.params.serviceName,
+        username,
+        password,
+        tag,
       );
 
       if (!response.ok) {

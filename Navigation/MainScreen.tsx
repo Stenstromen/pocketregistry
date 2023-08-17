@@ -11,6 +11,9 @@ import {useFocusEffect} from '@react-navigation/native';
 // Custom hooks and context
 import {useDarkMode} from '../DarkModeContext';
 
+// Custom Image
+import whaleImage from '../assets/whale.png';
+
 // Types and models
 import {RootStackParamList} from '../Types';
 
@@ -58,18 +61,20 @@ const MainScreen: React.FC<Props> = ({navigation}) => {
   );
   return (
     <View style={dynamicStyles.container}>
-      <Image source={{uri: 'https://http.cat/200.jpg'}} style={styles.image} />
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('Add')}>
-        <Text style={styles.buttonText}>Add Credentials</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        disabled={!hasCredentials}
-        style={[styles.button, !hasCredentials && styles.buttonDisabled]}
-        onPress={() => navigation.navigate('List')}>
-        <Text style={styles.buttonText}>View Credentials</Text>
-      </TouchableOpacity>
+      <Image source={whaleImage} style={styles.image} />
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('Add')}>
+          <Text style={styles.buttonText}>Add Registry</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          disabled={!hasCredentials}
+          style={[styles.button, !hasCredentials && styles.buttonDisabled]}
+          onPress={() => navigation.navigate('List')}>
+          <Text style={styles.buttonText}>View Registries</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -80,20 +85,25 @@ const styles = StyleSheet.create({
     height: 200,
     marginBottom: 20,
   },
+  buttonContainer: {
+    marginTop: 80,
+  },
   button: {
     backgroundColor: '#2196F3',
-    margin: 10,
     padding: 10,
-    borderRadius: 25,
+    borderRadius: 4,
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 20,
   },
   buttonDisabled: {
-    backgroundColor: '#A9A9A9', // Disabled color
+    backgroundColor: '#A9A9A9',
   },
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
+    width: 256,
+    textAlign: 'center',
   },
 });
 

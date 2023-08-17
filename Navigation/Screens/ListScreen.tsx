@@ -14,11 +14,12 @@ import {useDarkMode} from '../../DarkModeContext';
 import {RootStackParamList} from '../../Types';
 
 // Utilities and helpers
+import {fetchRepositories} from '../../Api';
 import {showToast} from '../../Utils';
 
 // External libraries and components
 import * as Keychain from 'react-native-keychain';
-import base64 from 'react-native-base64';
+import AntIcon from 'react-native-vector-icons/AntDesign';
 import {SwipeListView} from 'react-native-swipe-list-view';
 
 // ESLint disabling comment
@@ -33,9 +34,11 @@ interface Props {
 const getDynamicStyles = (isDark: boolean) => {
   return StyleSheet.create({
     text: {
-      padding: 20,
+      flex: 1,
+      padding: 18,
       fontSize: 25,
       color: isDark ? '#ccc' : '#333',
+      marginRight: 15,
     },
     rowFront: {
       alignItems: 'center',
@@ -127,32 +130,6 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
     }
   };
 
-  const fetchRepositories = async (
-    hostname: string,
-    registryUser: string,
-    registryPass: string,
-  ) => {
-    try {
-      const auth = 'Basic ' + base64.encode(registryUser + ':' + registryPass);
-      const response = await fetch(`${hostname}/v2/_catalog`, {
-        method: 'GET',
-        headers: {
-          Authorization: auth,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok.');
-      }
-
-      const responseData = await response.json();
-      return responseData.repositories;
-    } catch (error) {
-      console.error('Error fetching repositories:', error);
-      return [];
-    }
-  };
-
   return (
     <View style={styles.container}>
       <SwipeListView
@@ -167,9 +144,17 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
                 dynamicStyles.rowFront,
                 {transform: [{scale: scaleAnim}]},
               ]}>
-              <Text style={dynamicStyles.text}>
-                {item.service.replace(/^https?:\/\//, '').replace(/:.*/, '')}
-              </Text>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Text style={dynamicStyles.text}>
+                  {item.service.replace(/^https?:\/\//, '').replace(/:.*/, '')}
+                </Text>
+                <AntIcon
+                  name="minuscircleo"
+                  size={25}
+                  color={isDarkMode ? '#ccc' : '#333'}
+                  style={{paddingLeft: 15}}
+                />
+              </View>
             </Animated.View>
           </TouchableOpacity>
         )}

@@ -90,7 +90,6 @@ const FormScreen: React.FC<Props> = ({navigation}) => {
           placeholder={`Port (default: ${secure ? 443 : 80})`}
           onChangeText={setPort}
           value={port}
-          autoFocus
           autoCapitalize="none"
           autoCorrect={false}
           autoComplete="off"
