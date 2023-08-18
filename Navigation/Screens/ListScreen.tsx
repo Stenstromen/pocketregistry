@@ -16,10 +16,10 @@ import {RootStackParamList} from '../../Types';
 // Utilities and helpers
 import {fetchRepositories} from '../../Api';
 import {showToast} from '../../Utils';
+import Icon from '../../Components/Icon';
 
 // External libraries and components
 import * as Keychain from 'react-native-keychain';
-import AntIcon from 'react-native-vector-icons/AntDesign';
 import {SwipeListView} from 'react-native-swipe-list-view';
 
 // ESLint disabling comment
@@ -144,16 +144,13 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
                 dynamicStyles.rowFront,
                 {transform: [{scale: scaleAnim}]},
               ]}>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <View style={styles.listItem}>
                 <Text style={dynamicStyles.text}>
                   {item.service.replace(/^https?:\/\//, '').replace(/:.*/, '')}
                 </Text>
-                <AntIcon
-                  name="minuscircleo"
-                  size={25}
-                  color={isDarkMode ? '#ccc' : '#333'}
-                  style={{paddingLeft: 15}}
-                />
+                <Text>
+                  <Icon name="doubleleft" size={25} isDarkMode={isDarkMode} />
+                </Text>
               </View>
             </Animated.View>
           </TouchableOpacity>
@@ -179,6 +176,10 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  listItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   backRightBtn: {
     alignItems: 'center',

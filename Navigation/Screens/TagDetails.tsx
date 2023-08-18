@@ -17,6 +17,7 @@ import {RootStackParamList} from '../../Types';
 
 // Utilities and helpers
 import {formatDateAndDaysAgo, showToast} from '../../Utils';
+import Icon from '../../Components/Icon';
 
 // External libraries
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -104,24 +105,44 @@ const TagDetails: React.FC<TagDetailsProps> = ({route, navigation}) => {
   return (
     <ScrollView style={dynamicStyles.container}>
       <View style={dynamicStyles.section}>
-        <Text style={dynamicStyles.header}>Overview</Text>
-        <Text style={dynamicStyles.metaLabel}>Tag:</Text>
+        <Text style={dynamicStyles.header}>
+          <Icon name="cloud" size={42} isDarkMode={isDarkMode} />
+        </Text>
+        <Text style={dynamicStyles.metaLabel}>
+          <Icon name="tag" isDarkMode={isDarkMode} />
+          Tag:
+        </Text>
         <Text style={dynamicStyles.metaData}>{tag}</Text>
-        <Text style={dynamicStyles.metaLabel}>Repository:</Text>
+        <Text style={dynamicStyles.metaLabel}>
+          <Icon name="folderopen" isDarkMode={isDarkMode} />
+          Repository:
+        </Text>
         <Text style={dynamicStyles.metaData}>{repo}</Text>
       </View>
 
       <View style={dynamicStyles.section}>
-        <Text style={dynamicStyles.metaLabel}>Size:</Text>
+        <Text style={dynamicStyles.metaLabel}>
+          <Icon name="hdd" isDarkMode={isDarkMode} />
+          Size:
+        </Text>
         <Text style={dynamicStyles.metaData}>{size}</Text>
 
-        <Text style={dynamicStyles.metaLabel}>Architecture:</Text>
+        <Text style={dynamicStyles.metaLabel}>
+          <Icon name="calculator" isDarkMode={isDarkMode} />
+          Architecture:
+        </Text>
         <Text style={dynamicStyles.metaData}>{architecture}</Text>
 
-        <Text style={dynamicStyles.metaLabel}>OS:</Text>
+        <Text style={dynamicStyles.metaLabel}>
+          <Icon name="laptop" isDarkMode={isDarkMode} />
+          OS:
+        </Text>
         <Text style={dynamicStyles.metaData}>{os}</Text>
 
-        <Text style={dynamicStyles.metaLabel}>Created:</Text>
+        <Text style={dynamicStyles.metaLabel}>
+          <Icon name="calendar" isDarkMode={isDarkMode} />
+          Created:
+        </Text>
         <Text style={dynamicStyles.metaData}>
           {tagdate.formattedDate} ({tagdate.daysAgo})
         </Text>
@@ -130,20 +151,32 @@ const TagDetails: React.FC<TagDetailsProps> = ({route, navigation}) => {
       <View style={dynamicStyles.section}>
         <Text style={dynamicStyles.header}>Extended Information</Text>
 
-        <Text style={dynamicStyles.metaLabel}>Digest</Text>
+        <Text style={dynamicStyles.metaLabel}>
+          <Icon name="edit" isDarkMode={isDarkMode} />
+          Digest:
+        </Text>
         <Text style={dynamicStyles.metaData}>{repodigest}</Text>
 
-        <Text style={dynamicStyles.metaLabel}>Docker Version:</Text>
+        <Text style={dynamicStyles.metaLabel}>
+          <Icon name="hourglass" isDarkMode={isDarkMode} />
+          Docker Version:
+        </Text>
         <Text style={dynamicStyles.metaData}>{version}</Text>
 
-        <Text style={dynamicStyles.metaLabel}>Environment Variables:</Text>
+        <Text style={dynamicStyles.metaLabel}>
+          <Icon name="tool" isDarkMode={isDarkMode} />
+          Environment Variables:
+        </Text>
         {env?.map((variable, index) => (
           <Text key={index} style={dynamicStyles.metaData}>
             {'- ' + variable}
           </Text>
         ))}
 
-        <Text style={dynamicStyles.metaLabel}>Entrypoint:</Text>
+        <Text style={dynamicStyles.metaLabel}>
+          <Icon name="enter" isDarkMode={isDarkMode} />
+          Entrypoint:
+        </Text>
         {entrypoint ? (
           entrypoint.map((variable, index) => (
             <Text key={index} style={dynamicStyles.metaData}>
@@ -159,13 +192,17 @@ const TagDetails: React.FC<TagDetailsProps> = ({route, navigation}) => {
         <Text style={dynamicStyles.header}>Actions</Text>
         <TouchableOpacity
           style={dynamicStyles.button}
-          onPress={() => copyPullCommand(`docker pull ${url}/${repo}:${tag}`)}>
-          <Text style={dynamicStyles.metaData}>Copy Pull Command</Text>
+          onPress={() => copyPullCommand(repodigest)}>
+          <Text style={dynamicStyles.metaData}>
+            <Icon name="copy1" isDarkMode={isDarkMode} /> Digest
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={dynamicStyles.button}
-          onPress={() => copyPullCommand(repodigest)}>
-          <Text style={dynamicStyles.metaData}>Copy Digest</Text>
+          onPress={() => copyPullCommand(`docker pull ${url}/${repo}:${tag}`)}>
+          <Text style={dynamicStyles.metaData}>
+            <Icon name="copy1" isDarkMode={isDarkMode} /> Pull CMD
+          </Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
