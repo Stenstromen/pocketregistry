@@ -87,7 +87,7 @@ const RepositoryScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
       );
 
       if (!response.ok) {
-        throw new Error('Network response was not ok.');
+        showToast('Network response was not ok.');
       }
 
       const responseData = await response.json();
@@ -106,11 +106,9 @@ const RepositoryScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
       setSearchText('');
     } catch (error) {
       if (error instanceof Error) {
-        console.error('Error in handlePress:', error.message);
         showToast(error.message);
       } else {
-        console.error('An unexpected error occurred:', error);
-        showToast('An unexpected error occurred');
+        showToast('An unexpected error occurred' + error);
       }
     }
   };

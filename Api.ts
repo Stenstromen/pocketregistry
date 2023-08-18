@@ -1,4 +1,5 @@
 import base64 from 'react-native-base64';
+import {showToast} from './Utils';
 
 const createAuthHeader = (registryUser: string, registryPass: string) => {
   const auth = 'Basic ' + base64.encode(`${registryUser}:${registryPass}`);
@@ -22,13 +23,13 @@ export const fetchRepositories = async (
     });
 
     if (!response.ok) {
-      throw new Error('Network response was not ok.');
+      showToast('Error fetching repositories');
     }
 
     const responseData = await response.json();
     return responseData.repositories;
   } catch (error) {
-    console.error('Error fetching repositories:', error);
+    showToast('Error fetching repositories' + error);
     return [];
   }
 };

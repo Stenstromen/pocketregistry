@@ -70,7 +70,8 @@ const TagScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
     try {
       const response = await fetchBlob(url, username, password, repo, digest);
       if (!response.ok) {
-        throw new Error('Network response was not ok.');
+        showToast('Network response was not ok.');
+        return undefined;
       }
       const responseData = await response.json();
       return {
@@ -83,10 +84,8 @@ const TagScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
       };
     } catch (error) {
       if (error instanceof Error) {
-        console.error('Error in getBlob:', error.message);
         showToast(error.message);
       } else {
-        console.error('An unexpected error occurred:', error);
         showToast('An unexpected error occurred');
       }
     }
@@ -94,17 +93,9 @@ const TagScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
 
   const handlePress = async (tag: string) => {
     try {
-      /*       const auth = 'Basic ' + base64.encode(username + ':' + password);
-      const response = await fetch(`${url}/v2/${repo}/manifests/${tag}`, {
-        method: 'GET',
-        headers: {
-          Authorization: auth,
-          Accept: 'application/vnd.docker.distribution.manifest.v2+json',
-        },
-      }); */
       const response = await fetchManifest(url, username, password, repo, tag);
       if (!response.ok) {
-        throw new Error('Network response was not ok.');
+        showToast('Network response was not ok.');
       }
 
       const responseData = await response.json();
@@ -151,14 +142,12 @@ const TagScreen: React.FC<TagScreenProps> = ({route, navigation}) => {
         });
         setSearchText('');
       } else {
-        console.error('manifest.digest is undefined');
+        return showToast('API error: manifest.digest is undefined');
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.error('Error in handlePress:', error.message);
         showToast(error.message);
       } else {
-        console.error('An unexpected error occurred:', error);
         showToast('An unexpected error occurred');
       }
     }

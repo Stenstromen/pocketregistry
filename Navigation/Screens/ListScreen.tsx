@@ -123,10 +123,10 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
           data: repositories,
         });
       } else {
-        console.error('No credentials stored for this service');
+        showToast('No credentials stored for this service');
       }
     } catch (error) {
-      console.error('Error fetching credentials:', error);
+      showToast('Error fetching credentials' + error);
     }
   };
 
