@@ -64,6 +64,7 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
   const dynamicStyles = getDynamicStyles(isDarkMode);
   const [credentials, setCredentials] = useState<Array<{service: string}>>([]);
   const scaleAnim = useRef(new Animated.Value(1)).current;
+  const [pressedItemKey, setPressedItemKey] = useState<string | null>(null);
 
   useEffect(() => {
     const loadCredentials = async () => {
@@ -94,7 +95,8 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
     }
   };
 
-  const handlePress = (service: string) => {
+  const handlePress = (service: string, key: string) => {
+    setPressedItemKey(key);
     Animated.sequence([
       Animated.timing(scaleAnim, {
         toValue: 0.95,
@@ -110,6 +112,7 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
       handleCredentialPress(service);
     });
   };
+
   const handleCredentialPress = async (url: string) => {
     try {
       const credentials = await Keychain.getGenericPassword({service: url});
@@ -122,6 +125,7 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
           password,
           data: repositories,
         });
+        setPressedItemKey(null);
       } else {
         showToast('No credentials stored for this service');
       }
@@ -138,11 +142,14 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
         renderItem={({item}) => (
           <TouchableOpacity
             activeOpacity={1}
-            onPress={() => handlePress(item.service)}>
+            onPress={() => handlePress(item.service, item.service)}
+            style={dynamicStyles.rowFront}>
             <Animated.View
               style={[
-                dynamicStyles.rowFront,
-                {transform: [{scale: scaleAnim}]},
+                styles.item,
+                pressedItemKey === item.service
+                  ? {transform: [{scale: scaleAnim}]}
+                  : {},
               ]}>
               <View style={styles.listItem}>
                 <Text style={dynamicStyles.text}>
@@ -195,6 +202,9 @@ const styles = StyleSheet.create({
   },
   backTextWhite: {
     color: '#FFF',
+  },
+  item: {
+    width: '100%',
   },
 });
 

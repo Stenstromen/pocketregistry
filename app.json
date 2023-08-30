@@ -1,4 +1,7 @@
 {
   "name": "pocketregistry",
-  "displayName": "pocketregistry"
+  "displayName": "pocketregistry",
+  "react-native-google-mobile-ads": {
+    "ios_app_id": "ca-app-pub-3571877886198893~6434052654"
+  }
 }

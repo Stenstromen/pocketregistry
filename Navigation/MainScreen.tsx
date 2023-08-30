@@ -2,7 +2,14 @@
 import React, {useCallback, useState} from 'react';
 
 // React Native imports
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 // Navigation related imports
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -19,6 +26,7 @@ import {RootStackParamList} from '../Types';
 
 // External libraries
 import * as Keychain from 'react-native-keychain';
+import {BannerAd, BannerAdSize, TestIds} from 'react-native-google-mobile-ads';
 
 type MainScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 
@@ -30,9 +38,11 @@ const getDynamicStyles = (isDark: boolean) => {
   return StyleSheet.create({
     container: {
       flex: 1,
-      justifyContent: 'center',
+      flexDirection: 'column',
+      justifyContent: 'space-between', // new
       alignItems: 'center',
       backgroundColor: isDark ? '#333' : '#fff',
+      paddingTop: 20,
     },
     image: {
       width: 300,
@@ -47,6 +57,9 @@ const MainScreen: React.FC<Props> = ({navigation}) => {
   const {isDarkMode} = useDarkMode();
   const dynamicStyles = getDynamicStyles(isDarkMode);
   const [hasCredentials, setHasCredentials] = useState<boolean>(false);
+  const adUnitId = __DEV__
+    ? TestIds.BANNER
+    : 'ca-app-pub-3571877886198893~6434052654';
 
   const loadCredentials = useCallback(async () => {
     const availableCredentials = await Keychain.getAllGenericPasswordServices();
@@ -61,20 +74,29 @@ const MainScreen: React.FC<Props> = ({navigation}) => {
   );
   return (
     <View style={dynamicStyles.container}>
-      <Image source={whaleImage} style={styles.image} />
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('Add')}>
-          <Text style={styles.buttonText}>Add Registry</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          disabled={!hasCredentials}
-          style={[styles.button, !hasCredentials && styles.buttonDisabled]}
-          onPress={() => navigation.navigate('List')}>
-          <Text style={styles.buttonText}>View Registries</Text>
-        </TouchableOpacity>
-      </View>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <Image source={whaleImage} style={styles.image} />
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('Add')}>
+            <Text style={styles.buttonText}>Add Registry</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            disabled={!hasCredentials}
+            style={[styles.button, !hasCredentials && styles.buttonDisabled]}
+            onPress={() => navigation.navigate('List')}>
+            <Text style={styles.buttonText}>View Registries</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+      <BannerAd
+        unitId={adUnitId}
+        size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+        requestOptions={{
+          requestNonPersonalizedAdsOnly: true,
+        }}
+      />
     </View>
   );
 };
@@ -83,10 +105,10 @@ const styles = StyleSheet.create({
   image: {
     width: 300,
     height: 200,
-    marginBottom: 20,
+    marginBottom: 140,
   },
   buttonContainer: {
-    marginTop: 80,
+    flex: 1,
   },
   button: {
     backgroundColor: '#2196F3',
@@ -104,6 +126,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     width: 256,
     textAlign: 'center',
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
