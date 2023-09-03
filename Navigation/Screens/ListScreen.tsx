@@ -65,19 +65,33 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
   const [credentials, setCredentials] = useState<Array<{service: string}>>([]);
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const [pressedItemKey, setPressedItemKey] = useState<string | null>(null);
+  const [needsReload, setNeedsReload] = useState(true);
 
   useEffect(() => {
-    const loadCredentials = async () => {
-      const availableCredentials =
-        await Keychain.getAllGenericPasswordServices();
-      setCredentials(availableCredentials.map(service => ({service})));
-      if (availableCredentials.length === 0) {
-        navigation.navigate('PocketRegistry');
-      }
-    };
+    if (needsReload) {
+      const loadCredentials = async () => {
+        const availableCredentials =
+          await Keychain.getAllGenericPasswordServices();
+        const filteredCredentials = availableCredentials.filter(
+          service => service !== 'se.stenstromen.registryport',
+        );
 
-    loadCredentials();
-  }, [navigation, credentials]);
+        setCredentials(filteredCredentials.map(service => ({service})));
+
+        if (
+          filteredCredentials.length === 0 ||
+          (availableCredentials.length === 1 &&
+            availableCredentials[0] === 'se.stenstromen.registryport')
+        ) {
+          navigation.navigate('RegistryPort');
+        }
+
+        setNeedsReload(false);
+      };
+
+      loadCredentials();
+    }
+  }, [navigation, credentials, needsReload]);
 
   const handleDelete = async (service: string) => {
     try {
@@ -86,6 +100,7 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
         const availableCredentials =
           await Keychain.getAllGenericPasswordServices();
         setCredentials(availableCredentials.map(service => ({service})));
+        setNeedsReload(true);
       }
       showToast(
         `${service.replace(/^https?:\/\//, '').replace(/:.*/, '')} removed`,
@@ -139,29 +154,33 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
       <SwipeListView
         data={credentials}
         keyExtractor={item => item.service}
-        renderItem={({item}) => (
-          <TouchableOpacity
-            activeOpacity={1}
-            onPress={() => handlePress(item.service, item.service)}
-            style={dynamicStyles.rowFront}>
-            <Animated.View
-              style={[
-                styles.item,
-                pressedItemKey === item.service
-                  ? {transform: [{scale: scaleAnim}]}
-                  : {},
-              ]}>
-              <View style={styles.listItem}>
-                <Text style={dynamicStyles.text}>
-                  {item.service.replace(/^https?:\/\//, '').replace(/:.*/, '')}
-                </Text>
-                <Text>
-                  <Icon name="doubleleft" size={25} isDarkMode={isDarkMode} />
-                </Text>
-              </View>
-            </Animated.View>
-          </TouchableOpacity>
-        )}
+        renderItem={({item}) => {
+          return (
+            <TouchableOpacity
+              activeOpacity={1}
+              onPress={() => handlePress(item.service, item.service)}
+              style={dynamicStyles.rowFront}>
+              <Animated.View
+                style={[
+                  styles.item,
+                  pressedItemKey === item.service
+                    ? {transform: [{scale: scaleAnim}]}
+                    : {},
+                ]}>
+                <View style={styles.listItem}>
+                  <Text style={dynamicStyles.text}>
+                    {item.service
+                      .replace(/^https?:\/\//, '')
+                      .replace(/:.*/, '')}
+                  </Text>
+                  <Text>
+                    <Icon name="doubleleft" size={25} isDarkMode={isDarkMode} />
+                  </Text>
+                </View>
+              </Animated.View>
+            </TouchableOpacity>
+          );
+        }}
         renderHiddenItem={({item}) => (
           <View style={dynamicStyles.rowBack}>
             <TouchableOpacity

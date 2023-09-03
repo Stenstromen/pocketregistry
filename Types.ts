@@ -1,5 +1,5 @@
 export type RootStackParamList = {
-  PocketRegistry: undefined;
+  RegistryPort: undefined;
   Add: undefined;
   List: undefined;
   RepositoryScreen: {

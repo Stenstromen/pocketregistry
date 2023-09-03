@@ -1,4 +1,4 @@
-# PocketRegistry
+# RegistryPort
 
 ```
 cd ios && pod install && cd ..

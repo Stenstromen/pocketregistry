@@ -70,7 +70,7 @@ const FormScreen: React.FC<Props> = ({navigation}) => {
       service: fullHostname,
     });
     showToast(`${hostname} added!`);
-    navigation.navigate('PocketRegistry');
+    navigation.navigate('RegistryPort');
   };
 
   return (

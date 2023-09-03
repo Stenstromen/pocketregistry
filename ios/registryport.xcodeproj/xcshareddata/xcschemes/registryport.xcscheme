@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "pocketregistry.app"
-               BlueprintName = "pocketregistry"
-               ReferencedContainer = "container:pocketregistry.xcodeproj">
+               BuildableName = "registryport.app"
+               BlueprintName = "registryport"
+               ReferencedContainer = "container:registryport.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "pocketregistryTests.xctest"
-               BlueprintName = "pocketregistryTests"
-               ReferencedContainer = "container:pocketregistry.xcodeproj">
+               BuildableName = "registryportTests.xctest"
+               BlueprintName = "registryportTests"
+               ReferencedContainer = "container:registryport.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "pocketregistry.app"
-            BlueprintName = "pocketregistry"
-            ReferencedContainer = "container:pocketregistry.xcodeproj">
+            BuildableName = "registryport.app"
+            BlueprintName = "registryport"
+            ReferencedContainer = "container:registryport.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "pocketregistry.app"
-            BlueprintName = "pocketregistry"
-            ReferencedContainer = "container:pocketregistry.xcodeproj">
+            BuildableName = "registryport.app"
+            BlueprintName = "registryport"
+            ReferencedContainer = "container:registryport.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -63,7 +63,11 @@ const MainScreen: React.FC<Props> = ({navigation}) => {
 
   const loadCredentials = useCallback(async () => {
     const availableCredentials = await Keychain.getAllGenericPasswordServices();
-    setHasCredentials(availableCredentials.length > 0);
+    const filteredCredentials = availableCredentials.filter(
+      service => service !== 'se.stenstrom.registryport',
+    );
+
+    setHasCredentials(filteredCredentials.length - 1 > 0);
   }, []);
 
   useFocusEffect(
@@ -72,6 +76,7 @@ const MainScreen: React.FC<Props> = ({navigation}) => {
       return () => {};
     }, [loadCredentials]),
   );
+
   return (
     <View style={dynamicStyles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>

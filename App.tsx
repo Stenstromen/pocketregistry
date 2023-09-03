@@ -45,7 +45,7 @@ function StackNavigator(): JSX.Element {
               backgroundColor: isDarkMode ? '#333' : '#fff',
             },
           }}>
-          <Stack.Screen name="PocketRegistry" component={MainScreen} />
+          <Stack.Screen name="RegistryPort" component={MainScreen} />
           <Stack.Screen name="Add" component={FormScreen} />
           <Stack.Screen name="List" component={ListScreen} />
           <Stack.Screen
