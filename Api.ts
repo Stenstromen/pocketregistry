@@ -23,14 +23,19 @@ export const fetchRepositories = async (
     });
 
     if (!response.ok) {
-      showToast('Error fetching repositories');
+      throw new Error('Error fetching repositories');
     }
 
     const responseData = await response.json();
     return responseData.repositories;
   } catch (error) {
-    showToast('Error fetching repositories' + error);
-    return [];
+    if (error instanceof Error) {
+      showToast('Error: ' + error.message);
+      throw error;
+    } else {
+      showToast('An unexpected error occurred.');
+      throw new Error('An unexpected error occurred.');
+    }
   }
 };
 

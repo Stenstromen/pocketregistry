@@ -134,6 +134,11 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
       if (credentials) {
         const {username, password} = credentials;
         const repositories = await fetchRepositories(url, username, password);
+
+        if (repositories.length === 0) {
+          throw new Error('No repositories found');
+        }
+
         navigation.navigate('RepositoryScreen', {
           serviceName: url,
           username,
@@ -145,7 +150,11 @@ const ListScreen: React.FC<Props> = ({navigation}) => {
         showToast('No credentials stored for this service');
       }
     } catch (error) {
-      showToast('Error fetching credentials' + error);
+      if (error instanceof Error) {
+        showToast('Error: ' + error.message);
+      } else {
+        showToast('An unexpected error occurred.');
+      }
     }
   };
 
