@@ -1,5 +1,5 @@
 // React imports
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 
 // React Native component imports
 import {
@@ -49,13 +49,21 @@ const getDynamicStyles = (isDark: boolean) => {
 
 const FormScreen: React.FC<Props> = ({navigation}) => {
   const [hostname, setHostname] = useState<string>('');
+  const portInputRef = useRef<TextInput>(null);
   const [port, setPort] = useState<string>('');
   const [username, setUsername] = useState<string>('');
+  const usernameInputRef = useRef<TextInput>(null);
   const [password, setPassword] = useState<string>('');
+  const passwordInputRef = useRef<TextInput>(null);
   const [secure, setSecure] = useState<boolean>(true);
 
   const {isDarkMode} = useDarkMode();
   const dynamicStyles = getDynamicStyles(isDarkMode);
+
+  const handlePortChange = (text: string) => {
+    const numericOnly = text.replace(/[^0-9]/g, '');
+    setPort(numericOnly);
+  };
 
   const handleSave = async () => {
     if (!hostname || !username || !password) {
@@ -84,15 +92,22 @@ const FormScreen: React.FC<Props> = ({navigation}) => {
           autoCapitalize="none"
           autoCorrect={false}
           autoComplete="off"
+          returnKeyType="next"
+          keyboardType="url"
+          onSubmitEditing={() => portInputRef.current?.focus()}
           style={dynamicStyles.text}
         />
         <TextInput
           placeholder={`Port (default: ${secure ? 443 : 80})`}
-          onChangeText={setPort}
+          onChangeText={handlePortChange}
           value={port}
           autoCapitalize="none"
           autoCorrect={false}
           autoComplete="off"
+          ref={portInputRef}
+          returnKeyType="next"
+          keyboardType="numbers-and-punctuation"
+          onSubmitEditing={() => usernameInputRef.current?.focus()}
           style={dynamicStyles.text}
         />
         <TextInput
@@ -102,6 +117,9 @@ const FormScreen: React.FC<Props> = ({navigation}) => {
           autoCapitalize="none"
           autoCorrect={false}
           autoComplete="off"
+          ref={usernameInputRef}
+          returnKeyType="next"
+          onSubmitEditing={() => passwordInputRef.current?.focus()}
           style={dynamicStyles.text}
         />
         <TextInput
@@ -112,6 +130,8 @@ const FormScreen: React.FC<Props> = ({navigation}) => {
           autoCapitalize="none"
           autoCorrect={false}
           autoComplete="off"
+          ref={passwordInputRef}
+          returnKeyType="done"
           style={dynamicStyles.text}
         />
         <View style={styles.checkboxContainer}>
