@@ -59,7 +59,7 @@ const MainScreen: React.FC<Props> = ({navigation}) => {
   const [hasCredentials, setHasCredentials] = useState<boolean>(false);
   const adUnitId = __DEV__
     ? TestIds.BANNER
-    : 'ca-app-pub-3571877886198893~6434052654';
+    : 'ca-app-pub-3571877886198893/2929576432';
 
   const loadCredentials = useCallback(async () => {
     const availableCredentials = await Keychain.getAllGenericPasswordServices();
