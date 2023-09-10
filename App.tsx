@@ -25,10 +25,12 @@ import TagDetails from './Navigation/Screens/TagDetails';
 
 // External libraries
 import {RootSiblingParent} from 'react-native-root-siblings';
+import {MobileAds} from 'react-native-google-mobile-ads';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 function StackNavigator(): JSX.Element {
+  MobileAds().initialize();
   const {isDarkMode} = useDarkMode();
   const theme = isDarkMode ? DarkTheme : DefaultTheme;
 

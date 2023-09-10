@@ -26,7 +26,7 @@ import {RootStackParamList} from '../Types';
 
 // External libraries
 import * as Keychain from 'react-native-keychain';
-import {BannerAd, BannerAdSize, TestIds} from 'react-native-google-mobile-ads';
+import {BannerAd, BannerAdSize} from 'react-native-google-mobile-ads';
 
 type MainScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 
@@ -57,9 +57,7 @@ const MainScreen: React.FC<Props> = ({navigation}) => {
   const {isDarkMode} = useDarkMode();
   const dynamicStyles = getDynamicStyles(isDarkMode);
   const [hasCredentials, setHasCredentials] = useState<boolean>(false);
-  const adUnitId = __DEV__
-    ? TestIds.BANNER
-    : 'ca-app-pub-3571877886198893/2929576432';
+  const adUnitId = 'ca-app-pub-3571877886198893/2929576432';
 
   const loadCredentials = useCallback(async () => {
     const availableCredentials = await Keychain.getAllGenericPasswordServices();
@@ -100,6 +98,9 @@ const MainScreen: React.FC<Props> = ({navigation}) => {
         size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
         requestOptions={{
           requestNonPersonalizedAdsOnly: true,
+        }}
+        onAdFailedToLoad={error => {
+          console.error('Ad failed to load:', error);
         }}
       />
     </View>
