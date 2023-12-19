@@ -57,7 +57,7 @@ const MainScreen: React.FC<Props> = ({navigation}) => {
   const {isDarkMode} = useDarkMode();
   const dynamicStyles = getDynamicStyles(isDarkMode);
   const [hasCredentials, setHasCredentials] = useState<boolean>(false);
-  const adUnitId = 'ca-app-pub-3571877886198893/2929576432';
+  const adUnitId = 'ca-app-pub-3571877886198893/3518465223';
 
   const loadCredentials = useCallback(async () => {
     const availableCredentials = await Keychain.getAllGenericPasswordServices();
@@ -92,17 +92,17 @@ const MainScreen: React.FC<Props> = ({navigation}) => {
             <Text style={styles.buttonText}>View Registries</Text>
           </TouchableOpacity>
         </View>
+        <BannerAd
+          unitId={adUnitId}
+          size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+          requestOptions={{
+            requestNonPersonalizedAdsOnly: true,
+          }}
+          onAdFailedToLoad={error => {
+            console.error('Ad failed to load:', error);
+          }}
+        />
       </ScrollView>
-      <BannerAd
-        unitId={adUnitId}
-        size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-        requestOptions={{
-          requestNonPersonalizedAdsOnly: true,
-        }}
-        onAdFailedToLoad={error => {
-          console.error('Ad failed to load:', error);
-        }}
-      />
     </View>
   );
 };
@@ -137,6 +137,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 20,
   },
 });
 

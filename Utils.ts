@@ -59,7 +59,7 @@ export function formatBytes(bytes: number): string {
 
 export function showToast(message: string) {
   Toast.show(message, {
-    position: Toast.positions.TOP,
+    position: Toast.positions.TOP + 35,
     duration: Toast.durations.SHORT,
   });
 }
